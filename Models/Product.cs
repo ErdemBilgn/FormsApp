@@ -8,7 +8,7 @@ namespace FormsApp.Models
         public int ProductId { get; set; }
 
         [Display(Name = "Urun Adı")]
-        public string? Name { get; set; }
+        public string Name { get; set; } = String.Empty;
 
         [Display(Name = "Urun Fiyat")]
         public decimal Price { get; set; }
