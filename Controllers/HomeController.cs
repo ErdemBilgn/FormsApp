@@ -85,7 +85,7 @@ public class HomeController : Controller
         {
             return NotFound();
         }
-        Product entity = Repository.Products.FirstOrDefault(prd => prd.ProductId == id)!;
+        Product? entity = Repository.Products.FirstOrDefault(prd => prd.ProductId == id);
         if (entity == null)
         {
             return NotFound();
@@ -120,5 +120,42 @@ public class HomeController : Controller
         }
         ViewBag.Categories = new SelectList(Repository.Categories, "CategoryId", "Name");
         return View(model);
+    }
+
+    public IActionResult Delete(int? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+
+        Product? entity = Repository.Products.FirstOrDefault(prd => prd.ProductId == id);
+
+        if (entity == null)
+        {
+            return NotFound();
+        }
+
+        return View("DeleteConfirm", entity);
+    }
+
+    [HttpPost]
+    public IActionResult Delete(int? id, int ProductId)
+    {
+        if (id != ProductId)
+        {
+            return NotFound();
+        }
+
+        Product? entity = Repository.Products.FirstOrDefault(prd => prd.ProductId == id);
+
+        if (entity == null)
+        {
+            return NotFound();
+        }
+
+        Repository.DeleteProduct(entity);
+        return RedirectToAction("Index");
+
     }
 }

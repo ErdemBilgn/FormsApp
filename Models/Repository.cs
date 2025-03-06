@@ -95,7 +95,7 @@ namespace FormsApp.Models
 
         public static void Editproduct(Product updatedProduct)
         {
-            Product entity = _products.FirstOrDefault(p => p.ProductId == updatedProduct.ProductId)!;
+            Product? entity = _products.FirstOrDefault(p => p.ProductId == updatedProduct.ProductId);
 
             if (entity != null)
             {
@@ -104,6 +104,16 @@ namespace FormsApp.Models
                 entity.Image = updatedProduct.Image;
                 entity.CategoryId = updatedProduct.CategoryId;
                 entity.IsActive = updatedProduct.IsActive;
+            }
+        }
+
+        public static void DeleteProduct(Product deletedProduct)
+        {
+            Product? entity = _products.FirstOrDefault(p => p.ProductId == deletedProduct.ProductId);
+
+            if (entity != null)
+            {
+                _products.Remove(entity);
             }
         }
     }
