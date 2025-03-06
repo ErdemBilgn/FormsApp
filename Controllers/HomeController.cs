@@ -115,7 +115,7 @@ public class HomeController : Controller
                 }
                 model.Image = randomFileName;
             }
-            Repository.Editproduct(model);
+            Repository.EditProduct(model);
             return RedirectToAction("Index");
         }
         ViewBag.Categories = new SelectList(Repository.Categories, "CategoryId", "Name");
@@ -157,5 +157,15 @@ public class HomeController : Controller
         Repository.DeleteProduct(entity);
         return RedirectToAction("Index");
 
+    }
+
+    public IActionResult EditProducts(List<Product> Products)
+    {
+        foreach (Product prd in Products)
+        {
+            Repository.EditIsActive(prd);
+        }
+
+        return RedirectToAction("Index");
     }
 }
