@@ -82,4 +82,47 @@ public class HomeController : Controller
         ViewBag.Categories = new SelectList(Repository.Categories, "CategoryId", "Name");
         return View(model);
     }
+
+    public IActionResult Edit(int? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+        Product entity = Repository.Products.FirstOrDefault(prd => prd.ProductId == id);
+        if (entity == null)
+        {
+            return NotFound();
+        }
+        ViewBag.Categories = new SelectList(Repository.Categories, "CategoryId", "Name");
+        return View(entity);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Edit(int? id, Product model, IFormFile? imageFile)
+    {
+        if (id != model.ProductId)
+        {
+            return NotFound();
+        }
+
+        if (ModelState.IsValid)
+        {
+            if (imageFile != null)
+            {
+                string extension = Path.GetExtension(imageFile.FileName);
+                string randomFileName = string.Format($"{Guid.NewGuid()}{extension}");
+                string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", randomFileName);
+                using (FileStream stream = new(path, FileMode.Create))
+                {
+                    await imageFile.CopyToAsync(stream);
+                }
+                model.Image = randomFileName;
+            }
+            Repository.Editproduct(model);
+            return RedirectToAction("Index");
+        }
+        ViewBag.Categories = new SelectList(Repository.Categories, "CategoryId", "Name");
+        return View(model);
+    }
 }
