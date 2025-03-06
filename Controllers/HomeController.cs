@@ -46,39 +46,35 @@ public class HomeController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(Product model, IFormFile imageFile)
     {
+        string extension = "";
+
         if (imageFile != null)
-
         {
-            var extension = Path.GetExtension(imageFile.FileName).ToLower();
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
-
+            string[] allowedExtensions = [".jpg", ".jpeg", ".png"];
+            extension = Path.GetExtension(imageFile.FileName).ToLower();
             if (!allowedExtensions.Contains(extension))
             {
                 ModelState.AddModelError("", "Sadece jpg, jpeg ve png uzantılı doslayaları seçebilirsiniz.");
             }
-            else
-            {
-                var randomFileName = $"{Guid.NewGuid()}{extension}";
-                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", randomFileName);
-                if (ModelState.IsValid)
-                {
-                    using (var stream = new FileStream(path, FileMode.Create))
-                    {
-                        await imageFile.CopyToAsync(stream);
-                    }
+        }
 
-                    model.Image = randomFileName;
-                    model.ProductId = Repository.Products.Count + 1;
-                    Repository.CreateProduct(model);
-                    return RedirectToAction("Index");
+        if (ModelState.IsValid)
+        {
+            if (imageFile != null)
+            {
+                string randomFileName = $"{Guid.NewGuid()}{extension}";
+                string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", randomFileName);
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await imageFile.CopyToAsync(stream);
                 }
+
+                model.Image = randomFileName;
+                model.ProductId = Repository.Products.Count + 1;
+                Repository.CreateProduct(model);
+                return RedirectToAction("Index");
             }
         }
-        else
-        {
-            ModelState.AddModelError("", "Lütfen bir resim seçiniz.");
-        }
-
         ViewBag.Categories = new SelectList(Repository.Categories, "CategoryId", "Name");
         return View(model);
     }
@@ -89,7 +85,7 @@ public class HomeController : Controller
         {
             return NotFound();
         }
-        Product entity = Repository.Products.FirstOrDefault(prd => prd.ProductId == id);
+        Product entity = Repository.Products.FirstOrDefault(prd => prd.ProductId == id)!;
         if (entity == null)
         {
             return NotFound();

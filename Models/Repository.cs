@@ -95,7 +95,7 @@ namespace FormsApp.Models
 
         public static void Editproduct(Product updatedProduct)
         {
-            Product entity = _products.FirstOrDefault(p => p.ProductId == updatedProduct.ProductId);
+            Product entity = _products.FirstOrDefault(p => p.ProductId == updatedProduct.ProductId)!;
 
             if (entity != null)
             {
